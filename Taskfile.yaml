@@ -1,0 +1,27 @@
+version: 3
+
+dotenv: [".env"]
+
+includes:
+  container: ./tasks/container.yaml
+
+tasks:
+  default:
+    silent: true
+    cmds:
+      - task --list
+  init:
+    silent: true
+    desc: "Initialize environment to test the example"
+    cmds:
+      - task: teardown
+      - echo "Starting local registry"
+      - docker run -d -p 5000:5000 --restart=always --name registry-taskfile-example registry:2 > /dev/null
+      - echo "Local registry is running at http://localhost:5000"
+  teardown:
+    silent: true
+    desc: "Destroy the environment"
+    cmds:
+      - docker stop registry-taskfile-example > /dev/null || true
+      - docker rm registry-taskfile-example -f > /dev/null || true
+      - echo "Local registry not running"

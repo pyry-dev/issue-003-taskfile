@@ -1,0 +1,19 @@
+version: '3'
+
+tasks:
+  release:
+    silent: true
+    requires: 
+      vars: 
+      - NAME
+      - VERSION
+      - REGISTRY_ADDRESS
+    preconditions: 
+      - sh: test -f {{.NAME}}.Dockerfile
+        msg: "Dockerfile for the release not found: {{.NAME}}.Dockerfile"
+    desc: "Release a new version"
+    cmds:
+      - |
+        docker build -t "{{.REGISTRY_ADDRESS}}/{{.NAME}}:{{.VERSION}}" -f {{.NAME}}.Dockerfile .
+        docker push "{{.REGISTRY_ADDRESS}}/{{.NAME}}:{{.VERSION}}"
+
